@@ -25,8 +25,8 @@ This repository contains Terraform configuration to deploy an application on **G
 │  │  │ App Subnet (10.0.1.0/24)    │  │ DB Subnet            │   │   │
 │  │  │                             │  │ (10.0.2.0/24)        │   │   │
 │  │  │  ┌───────────────────────┐  │  │                      │   │   │
-│  │  │  │ GKE Cluster           │  │  │  ┌────────────────┐  │   │   │
-│  │  │  │  └─ Node Pool         │  │  │  │ Cloud SQL      │  │   │   │
+│  │  │  │                       │  │  │  ┌────────────────┐  │   │   │
+│  │  │  │      GKE Cluster      │  │  │  │   Cloud SQL    │  │   │   │
 │  │  │  │                       │  │  │  │                │  │   │   │
 │  │  │  └───────────────────────┘  │  │  └────────────────┘  │   │   │
 │  │  └─────────────────────────────┘  └──────────────────────┘   │   │
@@ -40,13 +40,11 @@ This repository contains Terraform configuration to deploy an application on **G
 │  │  └──────────┘  └──────────┘  │                                   │
 │  └──────────────────────────────┘                                   │
 │                                                                     │
-│  ┌──────────────────┐    ┌───────────────────────────────────────┐  │
-│  │ Cloud Storage    │    │ Service Accounts                      │  │
-│  │ (Reports/Assets) │    │  ├─ gke-sa                            │  │
-│  └──────────────────┘    │  ├─ api-sa                            │  │
-│                          │  ├─ frontend-sa                       │  │
-│                          │  └─ scheduler-sa                      │  │
-│                          └───────────────────────────────────────┘  │
+│  ┌──────────────────┐                                               │
+│  │ Cloud Storage    │                                               │
+│  │ (Reports/Assets) │                                               │
+│  └──────────────────┘                                               │
+│                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -93,20 +91,15 @@ Terraform may stop at the first error it encounters. After fixing each issue, re
 
 Once the configuration is valid, implement the following improvements:
 
-1.  **Cost Allocation**
-    - Ensure **every** resource includes the following labels for billing visibility:
-        - `cost_center`
-        - `owner`
-
-2.  **Remote State Configuration**
+1.  **Remote State Configuration**
     - The current project uses local state. Update the configuration to use a **GCS backend** for remote state storage.
     - Ensure the configuration block is present (the actual bucket does not need to exist for this exercise).
 
-3.  **Refactor into Modules**
+2.  **Refactor into Module**
     - Move the **VPC/Networking** logic into a module.
     - Update the root `main.tf` to call this module.
 
-4.  **Secrets Management**
+3.  **Secrets Management**
     - Locate the **API** service definition in `main.tf`.
     - Observe that the `DB_PASSWORD` is currently hardcoded as a plain-text environment variable.
     - Update the code to reference a secret from **Google Secret Manager** instead.
